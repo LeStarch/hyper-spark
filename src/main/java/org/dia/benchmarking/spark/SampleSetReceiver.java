@@ -11,7 +11,7 @@ import org.apache.spark.streaming.receiver.Receiver;
 
 public class SampleSetReceiver extends Receiver<byte[]> {
 
-    public static final int SAMPLE_SIZE = 10;
+    public static final int SAMPLE_SIZE = 1000000;
     public static final int BYTE_ARRAY_SIZE = SAMPLE_SIZE*8;
     
     private static final long serialVersionUID = 1L;

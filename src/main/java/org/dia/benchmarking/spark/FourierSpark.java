@@ -19,6 +19,7 @@ public class FourierSpark {
      */
     public static void driver(String inHost, int inPort, int outPort) {
         try {
+            int duration = 100000;
             //Math to run
             final Fourier fourier = new Fourier();
             //Communication in and out
@@ -26,13 +27,13 @@ public class FourierSpark {
             final FourierOutput outFn = new FourierOutput(outPort);
             System.out.println("Awaiting connection from producer socket");
             SampleSetReceiver samples = new SampleSetReceiver(StorageLevel.MEMORY_ONLY_2(),inHost,inPort);
-            System.out.println("Starting up spark");
+            System.out.println("Starting up spark with duration: "+duration+" Sample size: "+SampleSetReceiver.SAMPLE_SIZE);
             //Spark configuration
             SparkConf c = new SparkConf();
             c.setAppName("Starch is Great.APP");
-            c.setMaster("local[4]");
+            c.setMaster("local[*]");
             JavaSparkContext sc = new JavaSparkContext(c);
-            JavaStreamingContext ssc = new JavaStreamingContext(sc, new Duration(100));
+            JavaStreamingContext ssc = new JavaStreamingContext(sc, new Duration(duration));
             //Processing chain
             JavaDStream<byte[]> stream = ssc.receiverStream(samples);
             JavaDStream<byte[]> output = stream.map(fourier);
@@ -42,7 +43,6 @@ public class FourierSpark {
                     @Override
                     public Void call(JavaRDD<byte[]> rdd) throws Exception {
                         for (byte[] bytes : rdd.collect()) {
-                            System.out.println("Output: "+bytes.length+"bytes");
                             outFn.call(bytes);
                         }
                         return null;
