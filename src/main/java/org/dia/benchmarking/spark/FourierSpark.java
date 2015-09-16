@@ -20,7 +20,7 @@ public class FourierSpark {
     public static void driver(String inHost, int inPort,String master, int outPort) {
         try {
             int duration = 1000;
-            String jars = 
+            String[] jars = new String[]{FourierSpark.class.getProtectionDomain().getCodeSource().getLocation().getPath()};
             //Math to run
             final Fourier fourier = new Fourier();
             //Communication in and out
@@ -33,6 +33,7 @@ public class FourierSpark {
             SparkConf c = new SparkConf();
             c.setAppName("Starch is Great.APP");
             c.setMaster(master);
+            c.setJars(jars);
             JavaSparkContext sc = new JavaSparkContext(c);
             JavaStreamingContext ssc = new JavaStreamingContext(sc, new Duration(duration));
             //Processing chain

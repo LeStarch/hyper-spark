@@ -13,14 +13,20 @@ public class FourierOutput implements Function<byte[],Void> {
     ServerSocket ssock;
     Socket sock;
     OutputStream os;
-    public FourierOutput(int port) throws IOException {
-        this.ssock = new ServerSocket(port);
+    int port;
+    
+    public FourierOutput(int port) {
+        this.port = port;
+    }
+    private void setup() throws IOException {
+        this.ssock = new ServerSocket(this.port);
         this.sock = this.ssock.accept();
         this.os = this.sock.getOutputStream();
     }
     
     @Override
     public Void call(byte[] output) throws Exception {
+        setup();
         this.os.write(output);
         return null;
     }
