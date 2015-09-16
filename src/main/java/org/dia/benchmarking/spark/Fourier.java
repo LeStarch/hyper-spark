@@ -13,6 +13,11 @@ public class Fourier implements Function<byte[],byte[]> {
 
     @Override
     public byte[] call(byte[] in) throws Exception {
+        return in;
+        /*if (in.length>>3 <= 0) {
+            System.out.println("************************* Zero length array\n");
+            return new byte[0];
+        }
         double[] timeSeries = new double[in.length>>3];
         for (int i = 0; i < timeSeries.length; i++) {
             timeSeries[i] = ByteBuffer.wrap(in, i*8, 8).getDouble();
@@ -23,7 +28,7 @@ public class Fourier implements Function<byte[],byte[]> {
         for (int i = 0; i < output.length();i++) {
             ByteBuffer.wrap(out, i*8, 8).putDouble(output.getReal(i));
         }
-        return out;
+        return out;*/
     } 
 
     public static void main(String[] args) {

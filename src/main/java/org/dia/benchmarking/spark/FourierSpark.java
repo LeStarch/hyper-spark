@@ -17,9 +17,10 @@ public class FourierSpark {
     /**
      * Setup the driver
      */
-    public static void driver(String inHost, int inPort, int outPort) {
+    public static void driver(String inHost, int inPort,String master, int outPort) {
         try {
-            int duration = 100000;
+            int duration = 1000;
+            String jars = 
             //Math to run
             final Fourier fourier = new Fourier();
             //Communication in and out
@@ -31,7 +32,7 @@ public class FourierSpark {
             //Spark configuration
             SparkConf c = new SparkConf();
             c.setAppName("Starch is Great.APP");
-            c.setMaster("local[*]");
+            c.setMaster(master);
             JavaSparkContext sc = new JavaSparkContext(c);
             JavaStreamingContext ssc = new JavaStreamingContext(sc, new Duration(duration));
             //Processing chain
@@ -57,10 +58,10 @@ public class FourierSpark {
     }
     
     public static void main(String[] args) {
-        if (args.length != 3) {
-            System.err.println("Usage:\n\tprogram <host> <input port> <output port>");
+        if (args.length != 4) {
+            System.err.println("Usage:\n\tprogram <host> <input port> <spark master> <output port>");
             System.exit(-1);
         }
-        driver(args[0],Integer.parseInt(args[1]),Integer.parseInt(args[2]));
+        driver(args[0],Integer.parseInt(args[1]),args[2],Integer.parseInt(args[3]));
     }
 }
