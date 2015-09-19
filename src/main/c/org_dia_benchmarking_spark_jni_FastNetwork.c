@@ -8,14 +8,14 @@
 #include <sys/types.h>
 #include <string.h>
 
-#include "org_dia_benchmarking_spark_jni_FastNetworkReader.h"
+#include "org_dia_benchmarking_spark_jni_FastNetwork.h"
 
 
 #define BLOCK_SIZE 65536ull
 //#define TYPE AF_UNIX
 #define TYPE AF_INET
 typedef enum {
-    CLIENT,SERVER
+    CLIENT=0,SERVER=1
 } Type;
 
 int conn = -1;
@@ -51,25 +51,25 @@ int internet(short port,long address,Type type)
 }
 
 /*
- * Class:     org_dia_benchmarking_spark_jni_FastNetworkReader
+ * Class:     org_dia_benchmarking_spark_jni_FastNetwork
  * Method:    open
- * Signature: (Ljava/lang/String;I)V
+ * Signature: (Ljava/lang/String;II)I
  */
-JNIEXPORT jint JNICALL Java_org_dia_benchmarking_spark_jni_FastNetworkReader_open(JNIEnv * env, jobject thiso, jstring host, jint port)
+JNIEXPORT jint JNICALL Java_org_dia_benchmarking_spark_jni_FastNetwork_open(JNIEnv * env, jobject thiso, jstring host, jint port, jint type)
 {
     const char *chost = (*env)->GetStringUTFChars(env, host, NULL);
     if (NULL == chost) return -1;
-    conn = internet(port,inet_addr(chost),CLIENT);
+    conn = internet(port,inet_addr(chost),type);
     (*env)->ReleaseStringUTFChars(env, host, chost);
-    return 0;
+    return conn;
 }
 
 /*
- * Class:     org_dia_benchmarking_spark_jni_FastNetworkReader
+ * Class:     org_dia_benchmarking_spark_jni_FastNetwork
  * Method:    read
  * Signature: ()[B
  */
-JNIEXPORT jbyteArray JNICALL Java_org_dia_benchmarking_spark_jni_FastNetworkReader_read(JNIEnv * env, jobject thiso)
+JNIEXPORT jbyteArray JNICALL Java_org_dia_benchmarking_spark_jni_FastNetwork_read(JNIEnv * env, jobject thiso)
 {
     jbyte buffer[BLOCK_SIZE];
     int ret = read(conn,buffer,BLOCK_SIZE);
@@ -81,13 +81,39 @@ JNIEXPORT jbyteArray JNICALL Java_org_dia_benchmarking_spark_jni_FastNetworkRead
     (*env)->SetByteArrayRegion(env,jbar,0,ret,buffer);
     return jbar;
 }
+/*
+ * Class:     org_dia_benchmarking_spark_jni_FastNetwork
+ * Method:    write
+ * Signature: ([B)V
+ */
+JNIEXPORT jint JNICALL Java_org_dia_benchmarking_spark_jni_FastNetwork_write(JNIEnv * env, jobject thiso, jbyteArray data) {
+    jint len = (*env)->GetArrayLength(env, data); 
+    size_t tmp = 0;
+    jbyte *buffer = (*env)->GetPrimitiveArrayCritical(env, data, NULL);
+    if (buffer == NULL) {
+       (*env)->ReleasePrimitiveArrayCritical(env, data, buffer, JNI_ABORT); 
+       return -1;
+    }
+    while (tmp < len) {
+         size_t ret = -1;
+         size_t towr = (len-tmp>=BLOCK_SIZE)?BLOCK_SIZE:len-tmp;
+         ret = write(conn,buffer+tmp,towr);
+         if (ret < 0) {
+             (*env)->ReleasePrimitiveArrayCritical(env, data, buffer, JNI_ABORT);
+             return ret;
+         }
+         tmp += ret;
+    }
+    (*env)->ReleasePrimitiveArrayCritical(env, data, buffer, JNI_ABORT);
+    return tmp;
+}
 
 /*
- * Class:     org_dia_benchmarking_spark_jni_FastNetworkReader
+ * Class:     org_dia_benchmarking_spark_jni_FastNetwork
  * Method:    close
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_dia_benchmarking_spark_jni_FastNetworkReader_close(JNIEnv * env, jobject thiso)
+JNIEXPORT void JNICALL Java_org_dia_benchmarking_spark_jni_FastNetwork_close(JNIEnv * env, jobject thiso)
 {
     close(conn);
     return;
