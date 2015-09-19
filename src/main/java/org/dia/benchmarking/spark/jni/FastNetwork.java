@@ -2,10 +2,6 @@ package org.dia.benchmarking.spark.jni;
 
 import java.io.IOException;
 
-enum Type {
-    CLIENT,
-    SERVER
-}
 
 public class FastNetwork {
     //Load up the dynamic C library
@@ -13,6 +9,11 @@ public class FastNetwork {
         System.out.println("Loading libs from: "+System.getProperty("java.library.path"));
         System.loadLibrary("fastread");
      }
+    public enum Type {
+        CLIENT,
+        SERVER
+    }
+
     public FastNetwork(String host,int port,Type type) throws IOException {
         int i = open(host,port,type == Type.CLIENT?0:1);
         System.out.println("Opened port with file handler:"+i);
