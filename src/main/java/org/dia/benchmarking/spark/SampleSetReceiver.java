@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 import org.apache.spark.storage.StorageLevel;
 import org.apache.spark.streaming.receiver.Receiver;
+import org.dia.benchmarking.spark.jni.FastNetwork;
 
 public class SampleSetReceiver extends Receiver<byte[]> {
 
@@ -39,26 +40,21 @@ public class SampleSetReceiver extends Receiver<byte[]> {
 
     class ReadSocketThread implements Runnable {
         private static final long serialVersionUID = 1L;
-        Socket sock;
-        byte[] bytes = new byte[SampleSetReceiver.BYTE_ARRAY_SIZE];
+        FastNetwork sock;
         
         ReadSocketThread(String host, int port) throws UnknownHostException, IOException {
-            this.sock = new Socket(host,port);
+            this.sock = new FastNetwork(host,port,FastNetwork.Type.CLIENT);
         }
         
         @Override
         public void run() {
             try {
-
-                InputStream is = this.sock.getInputStream();
-                int total = 0;
                 while (!SampleSetReceiver.this.isStopped()) {
-                    total = 0;
-                    while (total < bytes.length) {
-                        total += is.read(this.bytes, total, this.bytes.length - total);
+                    byte[] bytes = this.sock.read();
+                    if (bytes.length <= 0) {
+                        throw new IOException("Bad read from connection");
                     }
                     SampleSetReceiver.this.store(bytes);
-                    this.bytes = new byte[SampleSetReceiver.BYTE_ARRAY_SIZE];
                 }
             } catch(IOException e) {
                 e.printStackTrace();
@@ -67,9 +63,7 @@ public class SampleSetReceiver extends Receiver<byte[]> {
         }
         
         public void close() {
-            try {
-                this.sock.close();
-            } catch (IOException e) {}
+            this.sock.close();
         }
     }
 }
