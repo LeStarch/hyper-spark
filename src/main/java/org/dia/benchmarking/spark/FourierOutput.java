@@ -17,7 +17,7 @@ public class FourierOutput implements Function<byte[],Void> {
         this.port = port;
     }
     private void setup() throws IOException {
-        if (this.writer != null) {
+        if (this.writer == null) {
             this.writer =  new WriteSocketThread(this.port);
             new Thread(this.writer).start();
         }

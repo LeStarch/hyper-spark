@@ -18,7 +18,7 @@ typedef enum {
     CLIENT=0,SERVER=1
 } Type;
 
-int conn = -1;
+//int conn = -1;
 /**
  * Opens up an internet socket on geiven port
  * @param port - port number to open
@@ -69,7 +69,7 @@ JNIEXPORT jint JNICALL Java_org_dia_benchmarking_spark_jni_FastNetwork_open(JNIE
  * Method:    read
  * Signature: ()[B
  */
-JNIEXPORT jbyteArray JNICALL Java_org_dia_benchmarking_spark_jni_FastNetwork_read(JNIEnv * env, jobject thiso)
+JNIEXPORT jbyteArray JNICALL Java_org_dia_benchmarking_spark_jni_FastNetwork_read(JNIEnv * env, jobject thiso, jint conn)
 {
     jbyte buffer[BLOCK_SIZE];
     int ret = read(conn,buffer,BLOCK_SIZE);
@@ -86,7 +86,7 @@ JNIEXPORT jbyteArray JNICALL Java_org_dia_benchmarking_spark_jni_FastNetwork_rea
  * Method:    write
  * Signature: ([B)V
  */
-JNIEXPORT jint JNICALL Java_org_dia_benchmarking_spark_jni_FastNetwork_write(JNIEnv * env, jobject thiso, jbyteArray data) {
+JNIEXPORT jint JNICALL Java_org_dia_benchmarking_spark_jni_FastNetwork_write(JNIEnv * env, jobject thiso,jint conn, jbyteArray data) {
     jint len = (*env)->GetArrayLength(env, data); 
     size_t tmp = 0;
     jbyte *buffer = (*env)->GetPrimitiveArrayCritical(env, data, NULL);
@@ -113,7 +113,7 @@ JNIEXPORT jint JNICALL Java_org_dia_benchmarking_spark_jni_FastNetwork_write(JNI
  * Method:    close
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_dia_benchmarking_spark_jni_FastNetwork_close(JNIEnv * env, jobject thiso)
+JNIEXPORT void JNICALL Java_org_dia_benchmarking_spark_jni_FastNetwork_close(JNIEnv * env, jobject thiso, jint conn)
 {
     close(conn);
     return;
