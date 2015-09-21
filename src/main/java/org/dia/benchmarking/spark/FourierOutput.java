@@ -12,13 +12,13 @@ public class FourierOutput implements Function<byte[],Void> {
     private static final long serialVersionUID = 1L;
     WriteSocketThread writer = null;
     int port;
-    
-    public FourierOutput(int port) {
+    String host;
+    public FourierOutput(String host,int port) {
         this.port = port;
     }
     private void setup() throws IOException {
         if (this.writer == null) {
-            this.writer =  new WriteSocketThread(this.port);
+            this.writer =  new WriteSocketThread(this.host,this.port);
             new Thread(this.writer).start();
         }
     }
@@ -35,9 +35,9 @@ public class FourierOutput implements Function<byte[],Void> {
         ConcurrentLinkedQueue<byte[]> queue;
         FastNetwork sock;
         
-        WriteSocketThread(int port) throws UnknownHostException, IOException {
+        WriteSocketThread(String host,int port) throws UnknownHostException, IOException {
             this.queue = new ConcurrentLinkedQueue<byte[]>();
-            this.sock = new FastNetwork("0.0.0.0",port,FastNetwork.Type.SERVER);
+            this.sock = new FastNetwork(host,port,FastNetwork.Type.CLIENT);
         }
         
         public void queueWrite(byte[] data) {

@@ -17,7 +17,7 @@ public class FourierSpark {
     /**
      * Setup the driver
      */
-    public static void driver(String inHost, int inPort,String master, int outPort) {
+    public static void driver(String inHost, int inPort,String master,String outHost, int outPort) {
         try {
             int duration = 100;
             String[] jars = new String[]{FourierSpark.class.getProtectionDomain().getCodeSource().getLocation().getPath()};
@@ -25,7 +25,7 @@ public class FourierSpark {
             final Fourier fourier = new Fourier();
             //Communication in and out
             System.out.println("Awaiting connection from receiver socket");
-            final FourierOutput outFn = new FourierOutput(outPort);
+            final FourierOutput outFn = new FourierOutput(outHost,outPort);
             System.out.println("Awaiting connection from producer socket");
             SampleSetReceiver samples = new SampleSetReceiver(StorageLevel.MEMORY_ONLY_2(),inHost,inPort);
             System.out.println("Starting up spark with duration: "+duration+" Sample size: "+SampleSetReceiver.SAMPLE_SIZE);
@@ -37,7 +37,8 @@ public class FourierSpark {
             c.set("spark.executor.extraLibraryPath","/home/03544/tg828439/hyper-spark-0.1/lib/");
             c.set("spark.driver.memory","100g");
             c.set("spark.driver.cores","24");
-JavaSparkContext sc = new JavaSparkContext(c);
+            c.set("spark.executor.memory","10g");
+            JavaSparkContext sc = new JavaSparkContext(c);
             JavaStreamingContext ssc = new JavaStreamingContext(sc, new Duration(duration));
             //Processing chain
             JavaDStream<byte[]> stream = ssc.receiverStream(samples);
@@ -63,9 +64,9 @@ JavaSparkContext sc = new JavaSparkContext(c);
     
     public static void main(String[] args) {
         if (args.length != 4) {
-            System.err.println("Usage:\n\tprogram <host> <input port> <spark master> <output port>");
+            System.err.println("Usage:\n\tprogram <host> <input port> <spark master> <output host> <output port>");
             System.exit(-1);
         }
-        driver(args[0],Integer.parseInt(args[1]),args[2],Integer.parseInt(args[3]));
+        driver(args[0],Integer.parseInt(args[1]),args[2],args[3],Integer.parseInt(args[4]));
     }
 }
