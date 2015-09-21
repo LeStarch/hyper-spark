@@ -19,7 +19,7 @@ public class FourierSpark {
      */
     public static void driver(String inHost, int inPort,String master, int outPort) {
         try {
-            int duration = 1000;
+            int duration = 100;
             String[] jars = new String[]{FourierSpark.class.getProtectionDomain().getCodeSource().getLocation().getPath()};
             //Math to run
             final Fourier fourier = new Fourier();
@@ -34,7 +34,10 @@ public class FourierSpark {
             c.setAppName("Starch is Great.APP");
             c.setMaster(master);
             c.setJars(jars);
-            JavaSparkContext sc = new JavaSparkContext(c);
+            c.set("spark.executor.extraLibraryPath","/home/03544/tg828439/hyper-spark-0.1/lib/");
+            c.set("spark.driver.memory","100g");
+            c.set("spark.driver.cores","24");
+JavaSparkContext sc = new JavaSparkContext(c);
             JavaStreamingContext ssc = new JavaStreamingContext(sc, new Duration(duration));
             //Processing chain
             JavaDStream<byte[]> stream = ssc.receiverStream(samples);
