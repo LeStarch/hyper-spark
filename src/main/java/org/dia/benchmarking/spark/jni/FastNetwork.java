@@ -17,7 +17,7 @@ public class FastNetwork {
     public FastNetwork(String host,int port,Type type) throws IOException {
         this.conn = openX(host,port,type == Type.CLIENT?0:1);
         System.out.println("Opened port with file handler:"+this.conn);
-        if (this.conn < 0) {
+        if (this.conn < 0 || this.conn == 255) {
             throw new IOException("Failed to connect to: "+host+":"+port);
         }
     }
