@@ -24,10 +24,11 @@ public class FourierSpark {
             //Math to run
             final Fourier fourier = new Fourier();
             //Communication in and out
-            System.out.println("Awaiting connection from receiver socket");
+            System.out.println("Attempting to gain input from: "+inHost+":"+inPort);
+            System.out.println("Attempting to put output to: "+outHost+":"+outPort);
+        
             final FourierOutput outFn = new FourierOutput(outHost,outPort);
-            System.out.println("Awaiting connection from producer socket");
-            SampleSetReceiver samples = new SampleSetReceiver(StorageLevel.MEMORY_ONLY_2(),inHost,inPort);
+            SampleSetReceiver samples = new SampleSetReceiver(StorageLevel.MEMORY_ONLY(),inHost,inPort);
             System.out.println("Starting up spark with duration: "+duration+" Sample size: "+SampleSetReceiver.SAMPLE_SIZE);
             //Spark configuration
             SparkConf c = new SparkConf();
@@ -37,7 +38,11 @@ public class FourierSpark {
             c.set("spark.executor.extraLibraryPath","/home/03544/tg828439/hyper-spark-0.1/lib/");
             c.set("spark.driver.memory","100g");
             c.set("spark.driver.cores","24");
-            c.set("spark.executor.memory","10g");
+            c.set("spark.executor.memory","100g");
+            c.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
+            c.set("spark.kryoserializer.buffer.max", "512m");
+            c.set("spark.kryoserializer.buffer", "512m");
+            c.set("spark.kryoserializer.referenceTracking", "false");
             JavaSparkContext sc = new JavaSparkContext(c);
             JavaStreamingContext ssc = new JavaStreamingContext(sc, new Duration(duration));
             //Processing chain
@@ -63,7 +68,7 @@ public class FourierSpark {
     }
     
     public static void main(String[] args) {
-        if (args.length != 4) {
+        if (args.length != 5) {
             System.err.println("Usage:\n\tprogram <host> <input port> <spark master> <output host> <output port>");
             System.exit(-1);
         }

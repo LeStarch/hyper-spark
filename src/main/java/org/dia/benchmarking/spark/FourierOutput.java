@@ -14,6 +14,7 @@ public class FourierOutput implements Function<byte[],Void> {
     int port;
     String host;
     public FourierOutput(String host,int port) {
+        this.host = host;
         this.port = port;
     }
     private void setup() throws IOException {
