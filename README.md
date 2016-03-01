@@ -13,8 +13,8 @@ The goal of this project is to get a single stream in Apache Spark Streaming pro
 JVM network stack provides an inefficient interface. The interface allows the reading on individual bytes from a Socket, and thus requries many function calls and a lot of copying of single bytes.
 
 Thus a JNI solution that can read blocks of data off a Berkley socket was used in order to ensure that the networking layer runs at peak performance.
--https://github.com/LeStarch/hyper-spark/blob/master/src/main/java/org/dia/benchmarking/spark/jni/FastNetwork.java
--https://github.com/LeStarch/hyper-spark/blob/master/src/main/c/org_dia_benchmarking_spark_jni_FastNetwork.c
+- https://github.com/LeStarch/hyper-spark/blob/master/src/main/java/org/dia/benchmarking/spark/jni/FastNetwork.java
+- https://github.com/LeStarch/hyper-spark/blob/master/src/main/c/org_dia_benchmarking_spark_jni_FastNetwork.c
 
 
 ## Current State
@@ -22,7 +22,7 @@ Thus a JNI solution that can read blocks of data off a Berkley socket was used i
 At the conclusion of the research, an individual Spark pipeline was recorded at processing around 500MB/s.
 
 ## Supported Research
--High-Throughput Apache Spark Streaming
-  -At Apache Con Europe (http://sched.co/400u)
--High-Throughput Kafka and Kafka in HPC https://github.com/LeStarch/kafka-benchmarking
+- High-Throughput Apache Spark Streaming
+  - At Apache Con Europe (http://sched.co/400u)
+- High-Throughput Kafka and Kafka in HPC https://github.com/LeStarch/kafka-benchmarking
 
