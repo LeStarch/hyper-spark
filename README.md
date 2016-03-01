@@ -16,10 +16,11 @@ Thus a JNI solution that can read blocks of data off a Berkley socket was used i
 - https://github.com/LeStarch/hyper-spark/blob/master/src/main/java/org/dia/benchmarking/spark/jni/FastNetwork.java
 - https://github.com/LeStarch/hyper-spark/blob/master/src/main/c/org_dia_benchmarking_spark_jni_FastNetwork.c
 
+Originally, the implementation was intended to run Fourier tansforms at high-speed. However, in order to achieve bare-bone efficiency this code as been disabled.
 
 ## Current State
 
-At the conclusion of the research, an individual Spark pipeline was recorded at processing around 500MB/s.
+At the conclusion of the research, an individual Spark pipeline was recorded at processing around 500MB/s.  Much of the Fourier processing code is commented out in order to get bare-bones efficiency.
 
 ## Supported Research
 - High-Throughput Apache Spark Streaming
